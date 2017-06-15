@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHubClientProcessor", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureHttpHub.Model", "AzureHttpHub.Model\AzureHttpHub.Model.csproj", "{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "listeners", "listeners", "{6EE5E6D7-3CCE-42DC-B99A-AFDA1911CAA9}"
+	ProjectSection(SolutionItems) = preProject
+		start-json.bat = start-json.bat
+		start-protobuf.bat = start-protobuf.bat
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
