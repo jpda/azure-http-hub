@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureHttpHub", "AzureHttpHub\AzureHttpHub.csproj", "{4CF81362-0AD3-47AF-860B-D02EE44A123B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHubClientProcessor", "EventHubClientProcessor\EventHubClientProcessor.csproj", "{ED3A7024-D841-4498-8AA7-F57824BC0DEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureHttpHub.Model", "AzureHttpHub.Model\AzureHttpHub.Model.csproj", "{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CF81362-0AD3-47AF-860B-D02EE44A123B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF81362-0AD3-47AF-860B-D02EE44A123B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF81362-0AD3-47AF-860B-D02EE44A123B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF81362-0AD3-47AF-860B-D02EE44A123B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED3A7024-D841-4498-8AA7-F57824BC0DEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED3A7024-D841-4498-8AA7-F57824BC0DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED3A7024-D841-4498-8AA7-F57824BC0DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED3A7024-D841-4498-8AA7-F57824BC0DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7615AF-E9B8-4F32-AED7-6EAEAE764698}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
