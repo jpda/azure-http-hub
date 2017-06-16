@@ -24,4 +24,4 @@ Probably not. This is intended as a sample of talking via HTTP to the Azure Hubs
   - Event Hub: `https://<sb namespace>.servicebus.windows.net/<EH name>/publishers/<Key/Policy Id>/messages/events`
   - IoT Hub: `https://<iot hub name>.azure-devices.net/devices/<Key or Device Id>/messages/events`
 - There are two serialization options implemented, one using JSON.Net and the other using protobuf-net.
--Therearetwoclientsin`EventHubClientProcessor`forreadinganddeserializingtheoutputfromboththeIoTHubandtheEventHub.Noticethesame`EventProcessorHost`canreadfrombothIoTHubandEventHubwithoutchanges.+
+- There are two clients in `EventHubClientProcessor` for reading and deserializing the output from both the IoT Hub and the Event Hub. Note the same `EventProcessorHost` can read from both IoT Hub and Event Hub without changes.
