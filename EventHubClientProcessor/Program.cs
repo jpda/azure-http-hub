@@ -1,16 +1,19 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using AzureHttpHub.Model;
+using Microsoft.Azure.EventHubs;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace EventHubClientProcessor
 {
     class Program
     {
-        private const string EhConnectionString = "{eh connection string}";
-        private const string IotHConnectionString = "{iot hub xon string}";
-        private const string EhEntityPath = "{eh entity name}";
-        private const string IotEntityPath = "{iot entity name}";
-
         static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
+            var config = builder.Build();
+
             var mode = "iot";
             var serializer = "json";
             if (args.Any())
@@ -19,16 +22,40 @@ namespace EventHubClientProcessor
                 serializer = args[1];
             }
 
-            var p = mode == "iot" ? new Processor(IotHConnectionString, IotEntityPath, "iot") : new Processor(EhConnectionString, EhEntityPath, "eventhub");
-
-            if (serializer == "json")
+            var processorConfiguration = new EventProcessorConfiguration()
             {
-                p.StartAsync<StringEventHubProcessor>().Wait();
+                StorageConnection = config["AppSettings:StorageConnection"],
+                ConsumerGroup = PartitionReceiver.DefaultConsumerGroupName
+            };
+
+            if (mode == "iot")
+            {
+                processorConfiguration.ConnectionString = config["AppSettings:IotHubConnectionString"];
+                processorConfiguration.EntityPath = config["AppSettings:IotEntityPath"];
             }
             else
             {
-                p.StartAsync<ProtobufEventHubProcessor>().Wait();
+                processorConfiguration.ConnectionString = config["AppSettings:EventHubConnectionString"];
+                processorConfiguration.EntityPath = config["AppSettings:EventHubEntityPath"];
             }
+
+            if (serializer == "json")
+            {
+                processorConfiguration.Deserializer = x => JsonConvert.DeserializeObject<PingData>(System.Text.Encoding.UTF8.GetString(x));
+            }
+            else
+            {
+                processorConfiguration.Deserializer = x =>
+                {
+                    using (var ms = new MemoryStream(x))
+                    {
+                        return ProtoBuf.Serializer.Deserialize<PingData>(ms);
+                    }
+                };
+            }
+
+            var p = new Processor(processorConfiguration);
+            p.StartAsync().Wait();
         }
     }
 }

@@ -7,38 +7,23 @@ namespace EventHubClientProcessor
 {
     public class Processor
     {
-        private const string StorageAccountName = "{storage account name}";
-        private const string StorageAccountKey = "{storage account key}";
-        private static readonly string StorageConnectionString = string.Format("DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}", StorageAccountName, StorageAccountKey);
+        private readonly EventProcessorConfiguration _config;
 
-        private readonly string _connectionString;
-        private readonly string _entityPath;
-        private readonly string _containerName;
-
-        public Processor(string connectionString, string entityPath, string containerName)
+        public Processor(EventProcessorConfiguration config)
         {
-            _connectionString = connectionString;
-            _entityPath = entityPath;
-            _containerName = containerName;
+            _config = config;
         }
 
-        public async Task StartAsync<T>() where T : IEventProcessor, new()
+        public async Task StartAsync()
         {
-            Console.WriteLine($"Registering {typeof(T).Name}, connecting to {_connectionString.Split(';')[0]}...");
+            Console.WriteLine($"Registering EventHubProcessor, connecting to {_config.ConnectionString.Split(';')[0]}...");
 
-            var eventProcessorHost = new EventProcessorHost(
-                _entityPath,
-                PartitionReceiver.DefaultConsumerGroupName,
-                _connectionString,
-                StorageConnectionString,
-                _containerName);
-
-            await eventProcessorHost.RegisterEventProcessorAsync<T>();
+            var eventProcessorHost = new EventProcessorHost(_config.EntityPath, _config.ConsumerGroup, _config.ConnectionString, _config.StorageConnection, _config.StorageContainer);
+            await eventProcessorHost.RegisterEventProcessorFactoryAsync(new DeserializingEventProcessorFactory(_config.Deserializer));
 
             Console.WriteLine("Receiving. Press ENTER to stop worker.");
             Console.ReadLine();
 
-            // Disposes of the Event Processor Host
             await eventProcessorHost.UnregisterEventProcessorAsync();
         }
     }

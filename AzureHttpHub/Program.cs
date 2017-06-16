@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using AzureHttpHub.Model;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace AzureHttpHub
@@ -12,30 +12,9 @@ namespace AzureHttpHub
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            new Thing().Go();
-            Console.ReadLine();
-        }
 
-        public static void StartReaders(string serialization)
-        {
-            var command = $@"..\..\..\start-{serialization}.bat";
-            var pi = new ProcessStartInfo("cmd.exe", "/c " + command) { CreateNoWindow = false };
-            Process.Start(pi);
-        }
-    }
-
-    public class Thing
-    {
-        public void Go()
-        {
-            var iotConnectionString = "{iotHub xon string}";
-            var sbConnectionString = "{sb/eh connection string}";
-
-            var senders = new List<Sender>()
-            {
-                new IotSender(iotConnectionString),
-                new EventHubSender(sbConnectionString)
-            };
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
+            var config = builder.Build();
 
             var jsonSerializer = true;
             Console.WriteLine("How would you like to serialize data? Options are (j)son (default) or (p)rotobuf");
@@ -48,8 +27,6 @@ namespace AzureHttpHub
                 }
             }
 
-            Program.StartReaders(jsonSerializer ? "json" : "protobuf");
-
             Console.WriteLine("How many messages to send? default 10");
             var iterations = 10;
             var iterationAnswer = Console.ReadLine();
@@ -58,38 +35,41 @@ namespace AzureHttpHub
                 int.TryParse(iterationAnswer, out iterations);
             }
 
+            //StartReaders(jsonSerializer ? "json" : "protobuf");
+
+            var iotConnectionString = config["AppSettings:IotHubConnectionString"];
+            var sbConnectionString = config["AppSettings:EventHubConnectionString"];
+
+            var senders = new List<Sender>()
+            {
+                new IotSender(iotConnectionString),
+                new EventHubSender(sbConnectionString)
+            };
+
             Console.WriteLine($" === Using {(jsonSerializer ? "JSON" : "Protobuf")} serializer, sending {iterations} items ====");
 
-            for (var i = 0; i < iterations; i++)
+            new Worker().Go(senders, x =>
             {
-                var data = new PingData()
-                {
-                    DeviceId = Guid.NewGuid().ToString(),
-                    Message = "Value x y z",
-                    PingTime = DateTime.UtcNow
-                };
-
-                byte[] byteData;
-
                 if (jsonSerializer)
                 {
-                    var j = JsonConvert.SerializeObject(data);
-                    byteData = System.Text.Encoding.UTF8.GetBytes(j);
+                    var j = JsonConvert.SerializeObject(x);
+                    return System.Text.Encoding.UTF8.GetBytes(j);
                 }
-                else
+                using (var ms = new MemoryStream())
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        ProtoBuf.Serializer.Serialize(ms, data);
-                        byteData = ms.ToArray();
-                    }
+                    ProtoBuf.Serializer.Serialize(ms, x);
+                    return ms.ToArray();
                 }
+            });
 
-                foreach (var sender in senders)
-                {
-                    sender.Send(byteData).Wait();
-                }
-            }
+            Console.ReadLine();
+        }
+
+        public static void StartReaders(string serialization)
+        {
+            var command = $@"start-{serialization}.bat";
+            var pi = new ProcessStartInfo("cmd.exe", "/c " + command) { CreateNoWindow = true };
+            Process.Start(pi);
         }
     }
 }

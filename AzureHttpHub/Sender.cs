@@ -1,9 +1,7 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace AzureHttpHub
 {
@@ -49,19 +47,13 @@ namespace AzureHttpHub
             }
             Console.Write("Created ");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write((string)GetType().Name);
+            Console.Write(GetType().Name);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write($", connecting to ");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write((string)HostName);
+            Console.Write(HostName);
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(" over HTTPS.");
-        }
-
-        public virtual async Task Send(string content)
-        {
-            Console.WriteLine("Recieved string content to send, converting to byte array and sending, hold plz...");
-            await Send(System.Text.Encoding.UTF8.GetBytes(content));
         }
 
         public virtual async Task Send(byte[] content)
@@ -88,22 +80,6 @@ namespace AzureHttpHub
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e);
                 Console.ForegroundColor = ConsoleColor.White;
-            }
-        }
-
-        public virtual async Task Send<T>(T thing)
-        {
-            Console.WriteLine("Recieved a complex type to send. Serializing to json and protobuf, hold plz...");
-            var j = JsonConvert.SerializeObject(thing);
-            Console.WriteLine("Sending JSON serialized object...");
-            await Send(j);
-            Console.WriteLine("Sending protobuf serialized object...");
-
-            using (var ms = new MemoryStream())
-            {
-                ProtoBuf.Serializer.Serialize(ms, thing);
-                var pba = ms.ToArray();
-                await Send(pba);
             }
         }
 
