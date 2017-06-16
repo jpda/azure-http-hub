@@ -1,5 +1,8 @@
-# azure-http-hub
+# azure-http-hub - WIP
 Simple, sample HTTP ingest-only clients for Azure Event Hub and IoT Hub
+
+# In progress
+Main project needs some cleanup
 
 # Why?
 In some cases, switching between Event Hub and IoT Hub for _sending_ data to your cloud services is a requirement. In my case, a customer was interested in IoT Hub but there were some regional availability issues - rather than abandon IoT Hub entirely, it made sense to build a simple sender that used EH and IoTH's HTTP endpoints for inbound messages, without using any pre-built SDKs or clients. This meant the implementation could be switched quickly without republishing code to thousands or millions of devices.
